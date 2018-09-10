@@ -57,7 +57,6 @@ class Klefki:
         return html.fromstring(self.session.get("https://cotizasso.com/Operation?page=%i" % page).content)
 
     def get_operations(self):
-
         page = 1
         tree = self.__get_operations(page);
         opnumber = utils.clean_float(tree.xpath("string(//*[@id=\"content \"]/section/section/section/div[3]/div/div/section/header/text())"))
@@ -80,47 +79,3 @@ class Klefki:
             tree = self.__get_operations(page)
         
         return operations
-
-    def run(self):
-        parser = MyParser()
-
-        parser.add_argument("username")
-        parser.add_argument("password")
-
-        parser.add_argument("--seasons", "-ls", help=u"Récupére, et imprime la liste des saisons puis quitte", action="store_true")
-        parser.add_argument("--season", "-s", type=int, help=u"Change la saison pour l'id SEASON avant l'export")
-        parser.add_argument("--csv", help=u"Active la sortie en CSV", action="store_true")
-
-        args = parser.parse_args()
-
-        self.login(args.username, args.password)
-
-        if args.seasons:
-            seasons = self.get_saisons()
-            data = [["","ID", "Nom", u"Début", "Fin"]]
-            for season in seasons:
-                data.append([
-                    "*" if season["current"] else " ", 
-                    season["id"],
-                    season["name"], 
-                    season["start"], 
-                    season["end"], 
-                ])
-            print SingleTable(data).table
-            exit(0)
-            
-        if args.season > 0:
-            if not self.switch_saison(args.season):
-                sys.stderr.write("Impossible de changer la saison pour l'ID %i" % args.season)
-                exit(404)
-
-        operations = self.get_operations()
-
-        if args.csv:
-            csvw = UnicodeCSVWriter(sys.stdout)
-            csvw.writerows(operations)
-        else:
-            print SingleTable([["Date", "Nom", "Email", u"Évenement", "Statut", u"Payé"]] + operations).table
-
-if __name__ == '__main__':
-    klefki().run()
