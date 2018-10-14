@@ -15,7 +15,10 @@ def clean_datetime(content):
     return re.sub('([\d]{2})/([\d]{2})/([\d]{4}) ([\d]{2})h([\d]{2})', '\\3-\\2-\\1 \\4:\\5:00', clean_spaces(content))
 
 def clean_float(content):
-    return float(re.sub('[^\d.]', '', clean_spaces(content)))
+    try:
+        return float(re.sub('[^\d.]', '', clean_spaces(content)))
+    except ValueError:
+        return 0.0
 
 def clean_int(content):
     return int(clean_float(content))

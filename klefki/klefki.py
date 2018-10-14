@@ -9,6 +9,7 @@ import utils
 class Klefki:
     def __init__(self):
         self.session = requests.session()
+        self.session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Windows NT x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
 
     # Perform login
     def login(self, username, password):
